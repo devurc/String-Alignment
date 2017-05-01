@@ -31,7 +31,8 @@ attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
 
 maximaBy :: Ord b => (a -> b) -> [a] -> [a] 
 maximaBy valueFcn xs =
-  [ x | x<-xs, valueFcn x == highestVal ]
+  -- [ x | x<-xs, valueFcn x == highestVal ]
+  filter (\x -> valueFcn x == highestVal) xs
   where highestVal = head . last . group . sort . map valueFcn $ xs
 
 

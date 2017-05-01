@@ -39,9 +39,12 @@ maximaBy valueFcn xs =
   filter (\x -> valueFcn x == highestVal) xs
   where highestVal = head . last . group . sort . map valueFcn $ xs
 
--- 2.d) Prints all optimal alignments between string1 and string2
+-- 2.d) Returns a list of all optimal alignments between string1 and string 2
 optAlignments :: String -> String -> [AlignmentType]
+optAlignments [] [] = []
 optAlignments string1 string2 = []
+
+
 
 
 

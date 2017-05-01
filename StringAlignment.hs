@@ -1,3 +1,6 @@
+import 
+  Data.List 
+
 scoreMatch = 0
 scoreMismatch = (-1)
 scoreSpace = (-1)
@@ -19,5 +22,23 @@ similarityScore (x:xs) (y:ys) =
       third = similarityScore (x:xs) ys + score('-',y)
   in max first $ max second third
   
+
+-- 2.b) This function takes two arguments, and respectively attaches them to the front 
+-- of a pair of two lists, for every pair in the list of pairs
+attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])] 
+attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
+
+
+maximaBy :: Ord b => (a -> b) -> [a] -> [a] 
+maximaBy valueFcn xs =
+  [ x | x<-xs, valueFcn x == highestVal ]
+  where highestVal = head . last . group . sort . map valueFcn $ xs
+
+
+
+
+
+
+
 
 

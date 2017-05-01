@@ -1,6 +1,6 @@
-scoreMatch = 1
+scoreMatch = 0
 scoreMismatch = (-1)
-scoreSpace = (-2)
+scoreSpace = (-1)
 
 score :: (Char,Char) -> Int
 score (x, y) 
@@ -9,14 +9,14 @@ score (x, y)
   | x /= y               = scoreMismatch
 
 
-optimumScore :: (String, String) -> Int
-optimumScore ([], []) = 0
-optimumScore ([], (y:ys)) = optimumScore([],ys) + score('-',y)
-optimumScore ((x:xs), []) = optimumScore(xs,[]) + score(x,'-')
-optimumScore ((x:xs),(y:ys)) =
-  let first = optimumScore(xs,ys) + score(x,y)
-      second = optimumScore(xs, y:ys) + score (x,'-')
-      third = optimumScore(x:xs, ys) + score ('-',y)
+similarityScore :: String -> String -> Int
+similarityScore [] [] = 0
+similarityScore [] (y:ys) = similarityScore [] ys + score('-',y)
+similarityScore (x:xs) [] = similarityScore xs [] + score(x,'-')
+similarityScore (x:xs) (y:ys) =
+  let first = similarityScore xs ys + score(x,y)
+      second = similarityScore xs (y:ys) + score(x,'-')
+      third = similarityScore (x:xs) ys + score('-',y)
   in max first $ max second third
   
 

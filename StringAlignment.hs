@@ -15,14 +15,14 @@ score x y
 
 
 -- 2.a) Calculates optimal score for two input strings
-similarityScore :: String -> String -> Int
-similarityScore [] [] = 0
-similarityScore [] (y:ys) = similarityScore [] ys + score '-' y
-similarityScore (x:xs) [] = similarityScore xs [] + score x '-'
-similarityScore (x:xs) (y:ys) =
-  let first = similarityScore xs ys + score x y
-      second = similarityScore xs (y:ys) + score x '-'
-      third = similarityScore (x:xs) ys + score '-' y
+similarityScore :: (String, String) -> Int
+similarityScore ([], []) = 0
+similarityScore ([], (y:ys)) = similarityScore ([], ys) + score '-' y
+similarityScore ((x:xs), []) = similarityScore (xs, []) + score x '-'
+similarityScore ((x:xs), (y:ys)) =
+  let first = similarityScore(xs, ys) + score x y
+      second = similarityScore(xs, (y:ys)) + score x '-'
+      third = similarityScore((x:xs), ys) + score '-' y
   in max first $ max second third
   
 
@@ -41,9 +41,20 @@ maximaBy valueFcn xs =
 
 -- 2.d) Returns a list of all optimal alignments between string1 and string 2
 optAlignments :: String -> String -> [AlignmentType]
-optAlignments [] [] = []
-optAlignments string1 string2 = []
+optAlignments string1 string2 = 
+  maximaBy similarityScore $ generate string1 string2
+  -- where rvStr1 = reverse string1
+  --       rvStr2 = reverse string2
 
+
+generate :: String -> String -> [AlignmentType]
+generate [] []     = [([], [])]
+generate (x:xs) [] = attachHeads x '-' $ generate xs []
+generate [] (y:ys) = attachHeads '-' y $ generate [] ys
+generate (x:xs) (y:ys) = 
+  attachHeads x y (generate xs ys) ++ 
+  attachHeads x '-' (generate xs (y:ys)) ++ 
+  attachHeads '-' y (generate (x:xs) ys)
 
 
 

@@ -44,7 +44,8 @@ optAlignments :: String -> String -> [AlignmentType]
 optAlignments string1 string2 = 
   maximaBy calcScore $ generate string1 string2
 
-
+-- Helper function that generates all possible alignments of 
+-- a pair of two strings
 generate :: String -> String -> [AlignmentType]
 generate [] []     = [([], [])]
 generate (x:xs) [] = attachHeads x '-' $ generate xs []
@@ -55,6 +56,8 @@ generate (x:xs) (y:ys) =
   attachHeads '-' y (generate (x:xs) ys)
 
 
+-- Helper function that calculates similarity score for a given
+-- pair of strings
 calcScore :: (String, String) -> Int
 calcScore ([], []) = 0
 calcScore ((x:xs), (y:ys))
@@ -63,8 +66,18 @@ calcScore ((x:xs), (y:ys))
   | x /= y               = scoreMismatch + calcScore(xs, ys)
 
 
-
-
-
+-- 2.e) Function that outputs best possible arrangements in
+-- readable fashion
+outputOptAlignments :: String -> String -> IO()
+outputOptAlignments string1 string2 =
+  putStrLn ("There are " ++ show (numResults)
+  ++ " optimal alignments: \n\n" ++ concat formatResult
+  ++ "There were " ++ show (numResults) ++ " optimal alignments!")
+  where result = optAlignments string1 string2
+        numResults = length result
+        firsts = map (intersperse ' ') $ map fst result
+        seconds = map (intersperse ' ') $ map snd result
+        newResult = zip firsts seconds
+        formatResult = [ x ++ "\n" ++ y ++ "\n\n" | (x,y)<-newResult ]
 
 

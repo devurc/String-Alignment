@@ -42,9 +42,7 @@ maximaBy valueFcn xs =
 -- 2.d) Returns a list of all optimal alignments between string1 and string 2
 optAlignments :: String -> String -> [AlignmentType]
 optAlignments string1 string2 = 
-  maximaBy similarityScore $ generate string1 string2
-  -- where rvStr1 = reverse string1
-  --       rvStr2 = reverse string2
+  maximaBy calcScore $ generate string1 string2
 
 
 generate :: String -> String -> [AlignmentType]
@@ -55,6 +53,14 @@ generate (x:xs) (y:ys) =
   attachHeads x y (generate xs ys) ++ 
   attachHeads x '-' (generate xs (y:ys)) ++ 
   attachHeads '-' y (generate (x:xs) ys)
+
+
+calcScore :: (String, String) -> Int
+calcScore ([], []) = 0
+calcScore ((x:xs), (y:ys))
+  | x == '-' || y == '-' = scoreSpace + calcScore(xs, ys)
+  | x == y               = scoreMatch + calcScore(xs, ys)
+  | x /= y               = scoreMismatch + calcScore(xs, ys)
 
 
 

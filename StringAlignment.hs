@@ -1,5 +1,5 @@
-import 
-  Data.List 
+import
+  Data.List
 
 scoreMatch = 0
 scoreMismatch = (-1)
@@ -24,16 +24,16 @@ similarityScore ((x:xs), (y:ys)) =
       second = similarityScore(xs, (y:ys)) + score x '-'
       third = similarityScore((x:xs), ys) + score '-' y
   in max first $ max second third
-  
 
--- 2.b) This function takes two arguments, and respectively attaches them to the front 
+
+-- 2.b) This function takes two arguments, and respectively attaches them to the front
 -- of a pair of two lists, for every pair in the list of pairs
-attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])] 
+attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])]
 attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
 
 -- 2.c) Determines highest value present in list, and filters list
 -- based on that high value
-maximaBy :: Ord b => (a -> b) -> [a] -> [a] 
+maximaBy :: Ord b => (a -> b) -> [a] -> [a]
 maximaBy valueFcn xs =
   -- [ x | x<-xs, valueFcn x == highestVal ]
   filter (\x -> valueFcn x == highestVal) xs
@@ -41,18 +41,18 @@ maximaBy valueFcn xs =
 
 -- 2.d) Returns a list of all optimal alignments between string1 and string 2
 optAlignments :: String -> String -> [AlignmentType]
-optAlignments string1 string2 = 
+optAlignments string1 string2 =
   maximaBy calcScore $ generate string1 string2
 
--- Helper function that generates all possible alignments of 
+-- Helper function that generates all possible alignments of
 -- a pair of two strings
 generate :: String -> String -> [AlignmentType]
 generate [] []     = [([], [])]
 generate (x:xs) [] = attachHeads x '-' $ generate xs []
 generate [] (y:ys) = attachHeads '-' y $ generate [] ys
-generate (x:xs) (y:ys) = 
-  attachHeads x y (generate xs ys) ++ 
-  attachHeads x '-' (generate xs (y:ys)) ++ 
+generate (x:xs) (y:ys) =
+  attachHeads x y (generate xs ys) ++
+  attachHeads x '-' (generate xs (y:ys)) ++
   attachHeads '-' y (generate (x:xs) ys)
 
 
@@ -79,5 +79,3 @@ outputOptAlignments string1 string2 =
         seconds = map (intersperse ' ') $ map snd result
         newResult = zip firsts seconds
         formatResult = [ x ++ "\n" ++ y ++ "\n\n" | (x,y)<-newResult ]
-
-

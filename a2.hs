@@ -1,31 +1,62 @@
-scoreMatch = 1
+import
+  Data.List
+
+scoreMatch = 0
 scoreMismatch = (-1)
-scoreSpace = (-2)
+scoreSpace = (-1)
 
+type AlignmentType = (String,String)
+
+score :: Char -> Char -> Int
+score x y
+  | x == '-' || y == '-' = scoreSpace
+  | x == y               = scoreMatch
+  | x /= y               = scoreMismatch
+
+
+-- 2.a) Calculates optimal score for two input strings
 similarityScore :: String -> String -> Int
+similarityScore [] [] = 0
+similarityScore [] (y:ys) = similarityScore [] ys + score '-' y
+similarityScore (x:xs) [] = similarityScore xs [] + score x '-'
+similarityScore (x:xs) (y:ys) =
+  let first = similarityScore xs ys + score x y
+      second = similarityScore xs (y:ys) + score x '-'
+      third = similarityScore (x:xs) ys + score '-' y
+  in max first $ max second third
 
-similarityScore string1 string2 = score (length string1) (length string2)
-    where
-        --extracting the similarity score from the table using indexing
-        score i j = scoreTable!!i!!j
 
-        --this line creates the score table and simultaneously populates it with the scores
-        scoreTable = [[scoreEntry i j | j <- [0..]] | i <- [0..]]
+-- 2.b) This function takes two arguments, and respectively attaches them to the front
+-- of a pair of two lists, for every pair in the list of pairs
+attachHeads :: a -> a -> [([a],[a])] -> [([a],[a])]
+attachHeads h1 h2 aList = [(h1:xs,h2:ys) | (xs,ys) <- aList]
+
+-- 2.c) Determines highest value present in list, and filters list
+-- based on that high value
+maximaBy :: Ord b => (a -> b) -> [a] -> [a]
+maximaBy valueFcn xs =
+  filter (\x -> valueFcn x == highestVal) xs
+  where highestVal = head . last . group . sort . map valueFcn $ xs
+
+-- 2.d) Returns a list of all optimal alignments between string1 and string 2
+optAlignments :: String -> String -> [AlignmentType]
+optAlignments string1 string2 =
+  maximaBy similarityScore (generate rvStr1 rvStr2)
+
+  where rvStr1 = reverse string1
+        rvStr2 = reverse string2
+
+--generate :: String -> String -> [AlignmentType]
+--generate [] []     = [([], [])]
+--generate (x:xs) [] = attachHeads x '-' $generate xs []
+--generate [] (y:ys) = attachHeads '-' y $generate [] ys
+--generate (x:xs) (y:ys) =
+  --(attachHeads x y $generate xs ys) ++ (attachHeads x '-' $generate (x:xs) ys) ++ (attachHeads '-' y $generate xs (y:ys))
 
 
-        --All intersections in the table with an empty list has a score of 0
-        scoreEntry _ 0 = 0
-        scoreEntry 0 _ = 0
 
-        --Else if a list is not empty, then apply the scoring criteria to the two sublists/list
-        --Also accumulate score from top left diagonal
-
-        scoreEntry i j
-            | h1 == h2 = scoreMatch + score(i-1, j-1)
-            | h1 == '_' || h2 == '_' = scoreSpace + score(i-1, j-1)
-            | h1 /= h2 = scoreMismatch + score(i-1, j-1)
-
-        --h1 is the head of string1 where
-            where
-                h1 = string1!!(i-1)
-                h2 = string2!!(j-1)
+generate :: String -> String -> [AlignmentType]
+generate [] []     = [([], [])]
+generate (x:xs) [] = attachHeads x '-' $ generate xs []
+generate [] (y:ys) = attachHeads '-' y $ generate [] ys
+generate (x:xs) (y:ys) = attachHeads x y (generate xs ys) ++ attachHeads x '-' (generate xs (y:ys)) ++ attachHeads '-' y (generate (x:xs) ys)

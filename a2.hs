@@ -50,9 +50,15 @@ duplicate string n = concat $ replicate n string
     --algEntry 0 j = (optLen 0 j, ([duplicate '-' i], [take i string1]))
     --algEntry i j = (optLen i j, concatMap snd z)
         --where
-            --
+            --(scoreDiag, alignmentDiag) = algLen (i-1) (j-1)
+            --(scoreLeft, alignmentLeft) = algLen (i-1) j
+            --(scoreAbove, alignmentAbove) = algLen i (j-1)
 
-
+            -- x = xs!!(i-1)
+            -- y = ys!!(j-1)
+            -- z = maximaBy snd $ [(scoreDiag + score x y, attachHeads x y alignmentDiag),
+                                   (scoreLeft + score x '-', attachHeads x '-' alignmentLeft),
+                                   (scoreAbove + score '-' y, attachHeads '-' y alignmentAbove)]
 
 -- 2.a) Calculates optimal score for two input strings
 similarityScore :: (String, String) -> Int

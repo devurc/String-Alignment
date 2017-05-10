@@ -18,6 +18,7 @@ optSimilarityScore string1 string2 = optLen (length string1) (length string2)
   where
     --string1 = reverse string1
     --string2 = reverse string2
+    optLen :: Int -> Int -> Int
     optLen i j = optTable!!i!!j
     optTable = [[optEntry i j | j<-[0..]] | i<-[0..]]
 
@@ -44,16 +45,16 @@ newOptAlignments string1 string2 = map (\(a, b) -> (reverse a, reverse b)) (snd(
 
     algEntry :: Int -> Int -> (Int, [AlignmentType])
     algEntry 0 0 = (0, [([],[])])
-    algEntry i 0 = (optLen i 0, ([take i string1], [duplicate '-' i]))
-    algEntry 0 j = (optLen 0 j, ([duplicate '-' j], [take j string2]))
-    algEntry i j = (optLen i j, concat $ map snd alignments)
+    algEntry i 0 = (optSimilarityScore (show(take i string1)) (duplicate "-" i), [(show(take i string1), duplicate "-" i)])
+    algEntry 0 j = (optSimilarityScore (duplicate "-" j) (show(take j string2)), [(duplicate "-" j, show(take j string2))])
+    algEntry i j = (fst (head alignments), concat $ map snd alignments)
         where
-            (scoreDiag, alignmentDiag) = algTable (i-1) (j-1)
-            (scoreLeft, alignmentLeft) = algTable (i-1) j
-            (scoreAbove, alignmentAbove) = algTable i (j-1)
+            (scoreDiag, alignmentDiag) = algLen (i-1) (j-1)
+            (scoreLeft, alignmentLeft) = algLen (i-1) j
+            (scoreAbove, alignmentAbove) = algLen i (j-1)
 
-            x = xs!!(i-1)
-            y = ys!!(j-1)
+            x = string1!!(i-1)
+            y = string2!!(j-1)
             alignments = maximaBy fst $ [(scoreDiag + score x y, attachHeads x y alignmentDiag),
                                    (scoreLeft + score x '-', attachHeads x '-' alignmentLeft),
                                    (scoreAbove + score '-' y, attachHeads '-' y alignmentAbove)]

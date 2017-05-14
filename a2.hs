@@ -105,7 +105,7 @@ similarityScore string1 string2 = optLen (length string1) (length string2)
             y = string2!!(j-1)
 
 optAlignments :: String -> String -> [AlignmentType]
-optAlignments string1 string2 = map (\(a,b) -> (reverse a, reverse b)) $ snd $ algLen (length string1) (length string2)
+optAlignments string1 string2 = map (\(xs,ys) -> (reverse xs, reverse ys)) $ snd $ algLen (length string1) (length string2)
   where
     algLen :: Int -> Int -> (Int, [AlignmentType])
     algLen i j = algTable!!i!!j
